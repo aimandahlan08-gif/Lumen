@@ -49,17 +49,20 @@ export default function Office() {
     return () => clearInterval(id);
   }, [load]);
 
-  const tick = useCallback(async () => {
+  const tick = useCallback(async (): Promise<"ok" | "fail" | "stop"> => {
+    let outcome: "ok" | "fail" | "stop" = "ok";
     setWorking(true);
     try {
       const r = await fetch("/api/tick", { method: "POST", headers: { "x-admin-key": key } });
       const j = await r.json();
-      if (j.reason === "quota") { setNote(j.message); autoRef.current = false; setAuto(false); }
-      else if (!j.ok && j.reason !== "busy") { setTickErr(j.reason); autoRef.current = false; setAuto(false); }
+      if (j.reason === "quota") { setNote(j.message); outcome = "stop"; }
+      else if (j.reason === "Wrong admin key") { setTickErr(j.reason); outcome = "stop"; }
+      else if (!j.ok && j.reason !== "busy") { setTickErr(j.reason); outcome = "fail"; }
       else { setNote(""); setTickErr(""); }
-    } catch (e: any) { setTickErr(`Couldn't reach the server: ${e.message}`); autoRef.current = false; setAuto(false); }
+    } catch (e: any) { setTickErr(`Couldn't reach the server: ${e.message}`); outcome = "fail"; }
     setWorking(false);
     await load();
+    return outcome;
   }, [key, load]);
 
   // Auto-run: keep taking turns while this page is open
@@ -68,10 +71,17 @@ export default function Office() {
     if (!auto) return;
     let stop = false;
     (async () => {
+      let failsInARow = 0;
       while (!stop && autoRef.current) {
-        await tick();
-        await new Promise((res) => setTimeout(res, 15000)); // gentle pace for free-tier limits
+        const r = await tick();
+        if (r === "stop") break;
+        failsInARow = r === "fail" ? failsInARow + 1 : 0;
+        if (failsInARow >= 3) break; // something is really wrong — stop and show the error
+        // gentle pace for free-tier limits; wait longer after a failure
+        await new Promise((res) => setTimeout(res, r === "fail" ? 45000 : 25000));
       }
+      autoRef.current = false;
+      setAuto(false);
     })();
     return () => { stop = true; };
   }, [auto, tick]);
@@ -98,7 +108,7 @@ export default function Office() {
         </div>
         <div className="controls">
           <input className="key" type="password" placeholder="admin key" value={key} onChange={(e) => saveKey(e.target.value)} />
-          <button className="btn" disabled={working || !key} onClick={tick}>
+          <button className="btn" disabled={working || !key} onClick={() => tick()}>
             {working ? "Working…" : "▶ Next turn"}
           </button>
           <button className={`btn ghost ${auto ? "on" : ""}`} disabled={!key} onClick={() => setAuto(!auto)}>

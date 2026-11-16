@@ -16,8 +16,10 @@ import {
 // (or isn't available on your key), the next one is tried automatically.
 const MODELS = [
   process.env.AGENT_MODEL,
-  "gemini-flash-latest",
+  // Flash-Lite first: faster, thinks less, and has the most generous free quota
   "gemini-3.5-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-flash-latest",
   "gemini-3.5-flash",
   "gemini-2.5-flash-lite",
   "gemini-2.5-flash",
@@ -134,7 +136,7 @@ Research question: ${s.question}
 Director's instructions:
 ${s.instructions}
 
-Write the first draft (a research proposal) in markdown: title, background, research question & hypotheses, method (design, participants, measures, analysis), expected contribution, limitations. Max ~700 words.`,
+Write the first draft (a research proposal) in markdown: title, background, research question & hypotheses, method (design, participants, measures, analysis), expected contribution, limitations. Max ~450 words.`,
         2000
       );
       update = { draft: full };
@@ -170,7 +172,7 @@ ${s.draft}
 Peer review:
 ${s.review}
 
-Write the final revised research brief in markdown, addressing every required fix. Start with a line "CHANGES:" listing what you changed in 2-4 bullets, then the brief. Max ~800 words.`,
+Write the final revised research brief in markdown, addressing every required fix. Start with a line "CHANGES:" listing what you changed in 2-4 bullets, then the brief. Max ~500 words.`,
         2200
       );
       update = { brief: full };

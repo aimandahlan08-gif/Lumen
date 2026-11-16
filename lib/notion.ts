@@ -5,13 +5,22 @@ import type { Phase } from "./company";
 
 const notion = new Client({ auth: process.env.NOTION_TOKEN });
 
+// IDs of the "Lumen Research Lab HQ" databases in Notion (not secret — useless without NOTION_TOKEN).
+// An environment variable with the same name overrides each one.
+const DEFAULT_IDS: Record<string, string> = {
+  NOTION_STATE_PAGE_ID: "41adfe99f77e81f5b47ffdded401c23b",
+  NOTION_LOG_DB_ID: "41adfe99f77e81a2bbb3fc147f0e77e8",
+  NOTION_OUTPUTS_DB_ID: "41adfe99f77e81549570ff16e4defa00",
+  NOTION_OPPORTUNITIES_DB_ID: "41adfe99f77e81a69dd7d95afc346748",
+};
+
 const STATE_PAGE = () => need("NOTION_STATE_PAGE_ID");
 const LOG_DB = () => need("NOTION_LOG_DB_ID");
 const OUTPUTS_DB = () => need("NOTION_OUTPUTS_DB_ID");
 const OPPS_DB = () => need("NOTION_OPPORTUNITIES_DB_ID");
 
 function need(name: string): string {
-  const v = process.env[name];
+  const v = process.env[name] || DEFAULT_IDS[name];
   if (!v) throw new Error(`Missing environment variable ${name}`);
   return v;
 }

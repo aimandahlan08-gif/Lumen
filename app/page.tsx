@@ -83,7 +83,7 @@ export default function Office() {
   const phase = s?.phase ?? "PLAN";
   const activeAgent = PHASE_INFO[phase].agent;
   const lastBy = (a: AgentId) => [...(s?.feed ?? [])].reverse().find((f) => f.agent === a);
-  const notionUrl = process.env.NEXT_PUBLIC_NOTION_URL;
+  const notionUrl = process.env.NEXT_PUBLIC_NOTION_URL || "https://www.notion.so/41adfe99f77e81388dd8e2c05d5266d6";
 
   return (
     <main className="wrap">

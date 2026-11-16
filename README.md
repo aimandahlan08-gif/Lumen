@@ -61,7 +61,7 @@ You only need to give the app permission to use it:
 3. Open the **Lumen Research Lab HQ** page in Notion → click **•••** (top right) →
    **Connections** → add **Lumen Lab**. The 4 databases inside get access too.
 
-The database IDs are already filled in `.env.example`.
+The database IDs are already built into the code.
 
 ### 3. Put the code on GitHub
 1. On https://github.com/new, create a repo called `ai-research-company`. Make it private.
@@ -71,16 +71,13 @@ The database IDs are already filled in `.env.example`.
 
 ### 4. Deploy on Vercel
 1. On https://vercel.com/new, import the `ai-research-company` repo.
-2. Before you click Deploy, open **Environment Variables** and add every line from
-   `.env.example`:
+2. Before you click Deploy, open **Environment Variables** and add these 4. Type each
+   name in **Key** and its value in **Value**, then tap **Add More** for the next one:
    - `GOOGLE_GENERATIVE_AI_API_KEY`: from step 1
-   - `AGENT_MODEL`: `gemini-flash-latest` (the code also tries a few other free
-     Flash models automatically if this one runs out of quota)
    - `NOTION_TOKEN`: from step 2
-   - The 4 `NOTION_..._ID` values: copy them from `.env.example`
    - `ADMIN_KEY`: make up a password. You'll type it into the dashboard.
    - `CRON_SECRET`: make up a long random string
-   - `NEXT_PUBLIC_NOTION_URL`: copy it from `.env.example`
+   (The model and Notion IDs are already built into the code.)
 3. Click **Deploy**. When it finishes, open your site.
 
 ### 5. Run your company

@@ -80,7 +80,21 @@
           "reason": "Useful, but several reviews of anthropomorphism already exist.",
           "chosen": false
         }
-      ]
+      ],
+      "scores": {
+        "draft": {
+          "rigor": 2,
+          "novelty": 4,
+          "ethics": 1,
+          "feasibility": 3
+        },
+        "final": {
+          "rigor": 4,
+          "novelty": 4,
+          "ethics": 4,
+          "feasibility": 3
+        }
+      }
     }
   ]
 }

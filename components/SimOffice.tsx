@@ -1,11 +1,15 @@
 "use client";
 // 3D "Sims-style" office for the Claude lab replay (three.js).
 // The team sits at desks, stands up, walks over to hand in papers, and
-// reacts with thought bubbles. A green plumbob floats over whoever is active.
+// reacts with thought bubbles. A golden marker floats over whoever is active.
+// Characters: Kenney (CC0). Furniture: KayKit Furniture Bits by Kay Lousberg (CC0).
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { AGENTS, type AgentId, type Phase } from "@/lib/company";
+import { buildDecor } from "./officeDecor";
 
 export type OfficeTurn = {
   key: number;
@@ -53,6 +57,8 @@ type Sim = {
   wantSeated: boolean;
   typing: boolean;
   face: number; // target yaw
+  react: { kind: "nod" | "shake" | "cheer" | null; t0: number };
+  rig?: { bones: Record<string, THREE.Bone>; rest: Record<string, THREE.Quaternion>; holder: THREE.Group };
 };
 
 export default function SimOffice({
@@ -170,7 +176,7 @@ export default function SimOffice({
     box(1.9, 0.06, 0.12, mat(0x9aa0b4), -2.6, 1.0, -3.93);
 
     // trophy shelf on left wall
-    box(0.35, 0.06, 3.2, mat(0x7a4e2d), -4.8, 1.9, 0.2);
+    box(0.35, 0.06, 3.2, mat(0x7a4e2d), -4.8, 2.45, 0.2);
     const trophyGroup = new THREE.Group(); scene.add(trophyGroup);
     const gold = mat(0xffc93c, { metalness: 0.8, roughness: 0.25 });
     const setTrophies = (n: number) => {
@@ -182,7 +188,7 @@ export default function SimOffice({
         const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.08, 8), gold); stem.position.y = 0.06;
         const base = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.03, 0.14), mat(0x3a2a20)); base.position.y = 0.015;
         g.add(cup, stem, base);
-        g.position.set(-4.78, 1.93, -1.2 + i * 0.3);
+        g.position.set(-4.78, 2.48, -1.2 + i * 0.3);
         trophyGroup.add(g);
       }
     };
@@ -198,13 +204,7 @@ export default function SimOffice({
         const l = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 1), mat(0x2e9d5b, { flatShading: true })); l.position.set(x + dx, y, z + dz); l.castShadow = true; scene.add(l);
       });
     };
-    plant(4.4, -3.5); plant(-4.5, 3.4);
-    const shelf = new THREE.Group(); shelf.position.set(-4.65, 0, -2.6); scene.add(shelf);
-    box(0.5, 1.9, 1.3, mat(0x6a4328), 0, 0.95, 0, shelf);
-    [0.5, 1.05, 1.6].forEach((y) => {
-      for (let i = 0; i < 6; i++)
-        box(0.3, 0.32, 0.12, mat([0xd9534f, 0x5bc0de, 0xf0ad4e, 0x5cb85c, 0x7c5cff, 0xeeeeee][(i + y * 10) % 6]), 0.12, y, -0.5 + i * 0.18, shelf);
-    });
+    plant(1.3, -3.55);
     box(1.4, 0.9, 0.6, mat(0xe9e4da), 4.2, 0.45, -3.6); // counter
     box(0.3, 0.4, 0.3, mat(0x222222), 4.0, 1.1, -3.6); // coffee machine
     const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.12, 12), mat(0xffffff)); mug.position.set(4.5, 0.96, -3.55); scene.add(mug);
@@ -240,6 +240,8 @@ export default function SimOffice({
       box(0.5, 0.04, 0.06, mat(0x777777), 0, 0.03, 0, ch);
       box(0.06, 0.04, 0.5, mat(0x777777), 0, 0.03, 0, ch);
     });
+
+    const decor = buildDecor(scene, mat, box, DESK);
 
     // ── People ──
     const sims: Record<AgentId, Sim> = {} as any;
@@ -281,13 +283,88 @@ export default function SimOffice({
       }
       root.position.copy(SEAT[id]);
       scene.add(root);
-      sims[id] = { id, root, hips, legL, legR, armL, armR, path: [], seated: 1, wantSeated: true, typing: false, face: 0 };
+      sims[id] = { id, root, hips, legL, legR, armL, armR, path: [], seated: 1, wantSeated: true, typing: false, face: 0, react: { kind: null, t0: 0 } };
     });
 
-    // plumbob over the active sim
-    const plumbM = new THREE.MeshStandardMaterial({ color: 0x3ee86b, emissive: 0x1fa64a, emissiveIntensity: 0.9, roughness: 0.3, transparent: true, opacity: 0.92 });
-    const plumbob = new THREE.Mesh(new THREE.OctahedronGeometry(0.12), plumbM);
-    plumbob.scale.set(1, 1.7, 1); scene.add(plumbob);
+    // ── Real 3D models (loaded in the background; simple shapes show until they arrive) ──
+    const loader = new GLTFLoader();
+    const draco = new DRACOLoader(); draco.setDecoderPath("/draco/"); loader.setDRACOLoader(draco);
+    const texLoader = new THREE.TextureLoader();
+    const CHAR: Record<AgentId, [string, string]> = {
+      director: ["male", "aiman"], associate: ["skater-female", "hajar"], reviewer: ["skater-female", "siti"],
+    };
+    IDS.forEach((id) => {
+      const [model, skin] = CHAR[id];
+      loader.load(`/models/chars/${model}.gltf`, (g) => {
+        const tex = texLoader.load(`/models/chars/${skin}.png`);
+        tex.flipY = false; tex.colorSpace = THREE.SRGBColorSpace;
+        const m = g.scene;
+        m.updateMatrixWorld(true);
+        const bb = new THREE.Box3().setFromObject(m, true);
+        m.scale.setScalar(1.72 / (bb.max.y - bb.min.y));
+        m.traverse((o: any) => {
+          if (o.isMesh) {
+            o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false;
+            o.material = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.75 });
+          }
+        });
+        const holder = new THREE.Group(); holder.add(m); sims[id].root.add(holder);
+        const bones: Record<string, THREE.Bone> = {}, rest: Record<string, THREE.Quaternion> = {};
+        m.traverse((o: any) => { if (o.isBone) { bones[o.name] = o; rest[o.name] = o.quaternion.clone(); } });
+        sims[id].rig = { bones, rest, holder };
+        sims[id].hips.visible = false; // hide the simple-shape stand-in
+      });
+    });
+    const qe = new THREE.Quaternion(), eu = new THREE.Euler();
+    const pose = (rig: NonNullable<Sim["rig"]>, name: string, x: number, y: number, z: number) => {
+      const b = rig.bones[name]; if (!b) return;
+      eu.set(x, y, z); qe.setFromEuler(eu); b.quaternion.copy(rig.rest[name]).multiply(qe);
+    };
+    // Point a bone (e.g. an upper arm) along a direction given in the character's own space
+    // (+x = character's left... in practice: x sideways, y up, z forward), whatever the rig's axes are.
+    const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _d = new THREE.Vector3(), _t = new THREE.Vector3();
+    const _q = new THREE.Quaternion(), _pw = new THREE.Quaternion(), _bw = new THREE.Quaternion(), _rw = new THREE.Quaternion();
+    const aim = (rig: NonNullable<Sim["rig"]>, root: THREE.Object3D, name: string, child: string, dir: THREE.Vector3) => {
+      const b = rig.bones[name], c = rig.bones[child]; if (!b || !c || !b.parent) return;
+      b.quaternion.copy(rig.rest[name]);
+      b.updateMatrixWorld(true);
+      b.getWorldPosition(_a); c.getWorldPosition(_b);
+      _d.subVectors(_b, _a).normalize();
+      root.getWorldQuaternion(_rw);
+      _t.copy(dir).normalize().applyQuaternion(_rw);
+      _q.setFromUnitVectors(_d, _t);
+      b.parent.getWorldQuaternion(_pw);
+      b.getWorldQuaternion(_bw);
+      b.quaternion.copy(_pw.invert().multiply(_q.multiply(_bw)));
+    };
+    // KayKit furniture: fit each model to a target width and place it on the floor
+    const kay = (file: string, x: number, z: number, rotY: number, width: number, y = 0) =>
+      loader.load(`/models/furniture/${file}.gltf`, (g) => {
+        const m = g.scene;
+        const bb = new THREE.Box3().setFromObject(m);
+        const size = bb.getSize(new THREE.Vector3());
+        m.scale.setScalar(width / Math.max(size.x, size.z));
+        m.rotation.y = rotY;
+        m.position.set(x, y, z);
+        m.traverse((o: any) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+        scene.add(m);
+      });
+    kay("rug_rectangle_stripes_A", -3.8, 2.55, Math.PI / 2, 2.2, 0.005);
+    kay("couch_pillows", -4.55, 2.5, Math.PI / 2, 1.6);
+    kay("table_low", -3.6, 2.5, Math.PI / 2, 0.85);
+    kay("armchair_pillows", -3.35, 3.55, Math.PI, 0.85);
+    kay("lamp_standing", -4.55, 3.7, 0, 0.45);
+    kay("book_set", -3.6, 2.45, 0.3, 0.3, 0.38);
+    kay("shelf_B_large_decorated", -4.7, -2.6, Math.PI / 2, 1.5);
+    kay("cactus_medium_A", 3.6, -3.65, 0, 0.35);
+    kay("pictureframe_medium", 4.3, -3.82, 0, 0.5, 0.92);
+
+    // Lumen marker over the active person (an original golden pointer)
+    const plumbM = new THREE.MeshStandardMaterial({ color: 0xffd34d, emissive: 0xffb300, emissiveIntensity: 0.7, roughness: 0.3, metalness: 0.2 });
+    const plumbob = new THREE.Group();
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.2, 4), plumbM); cone.rotation.x = Math.PI; plumbob.add(cone);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.018, 8, 24), plumbM); ring.rotation.x = Math.PI / 2; ring.position.y = 0.16; plumbob.add(ring);
+    scene.add(plumbob);
 
     // paper being carried / placed
     const paper = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.012, 0.3), mat(0xffffff, { roughness: 0.4 }));
@@ -311,7 +388,7 @@ export default function SimOffice({
       // reset everyone to their chairs
       IDS.forEach((id) => {
         const s = sims[id];
-        s.root.position.copy(SEAT[id]); s.path = []; s.wantSeated = true; s.seated = 1; s.typing = false; s.face = 0; s.root.rotation.y = 0;
+        s.root.position.copy(SEAT[id]); s.path = []; s.wantSeated = true; s.react = { kind: null, t0: 0 }; s.seated = 1; s.typing = false; s.face = 0; s.root.rotation.y = 0;
         screens[id].emissiveIntensity = 0.6; screens[id].color.set(0x223355);
       });
       paper.visible = false; paperOn = {};
@@ -335,6 +412,11 @@ export default function SimOffice({
           paper.visible = true; paperOn = { carrier: "associate" };
           at(100, () => walkTo("associate", [SIDE("associate"), AISLE("associate"), AISLE(to), SIDE(to)]));
           at(3300, () => { paperOn = { at: deskTop[to] }; sims[to].face = 0; });
+          if (t.phase === "REVIEW") at(3500, () => { sims.reviewer.react = { kind: t.verdict === "APPROVE" ? "nod" : "shake", t0: turnT }; });
+          if (t.phase === "DECIDE") at(3400, () => {
+            sims.director.react = { kind: t.decision === "SHELVE" ? "shake" : "cheer", t0: turnT };
+            if (t.decision !== "SHELVE") sims.associate.react = { kind: "cheer", t0: turnT };
+          });
           break;
         }
         case "SCAN":
@@ -356,6 +438,7 @@ export default function SimOffice({
       const [sc, si, hi, skc, li] = L[tod];
       sun.color.set(sc); sun.intensity = si; hemi.intensity = hi; skyM.color.set(skc);
       lamps.forEach((l) => (l.intensity = li));
+      decor.setTod(tod);
       sun.position.set(tod === "evening" ? 9 : 6, tod === "evening" ? 4 : 10, 4);
     };
 
@@ -399,6 +482,38 @@ export default function SimOffice({
         s.armL.rotation.x = armBase - swing * 0.8 + tap; s.armR.rotation.x = armBase + swing * 0.8 - tap;
         // breathing / idle bob
         s.hips.position.y += Math.sin(time * 2 + IDS.indexOf(id)) * 0.008;
+        const r = s.rig;
+        if (r) {
+          const st = s.seated, k = IDS.indexOf(id);
+          r.holder.position.y = -0.36 * st + Math.sin(time * 2 + k) * 0.006;
+          const sw = swing * 0.9;
+          pose(r, "LeftUpLeg", -1.5 * st + sw, 0, 0);
+          pose(r, "RightUpLeg", -1.5 * st - sw, 0, 0);
+          pose(r, "LeftLeg", 1.5 * st + (moving ? Math.max(0, -sw) * 1.2 : 0), 0, 0);
+          pose(r, "RightLeg", 1.5 * st + (moving ? Math.max(0, sw) * 1.2 : 0), 0, 0);
+          // reactions: nod, head shake, cheer
+          const rt = (turnT - s.react.t0) / 1000;
+          const live = s.react.kind && rt < 2.2;
+          const cheer = live && s.react.kind === "cheer";
+                    // a happy hop (standing) or bounce (seated), with arms raised
+          if (cheer) r.holder.position.y += Math.abs(Math.sin(rt * 9)) * (st > 0.5 ? 0.04 : 0.14) * Math.max(0, 1 - rt / 2.2);
+          const lift = cheer ? Math.min(1, rt * 4) * 2.3 : 0;
+          // arms hang down (z, mirrored per side), swing / reach forward (x)
+          // arms: hang down by the sides, swing a little when walking, reach forward when typing, up when cheering
+          r.holder.updateMatrixWorld(true);
+          const reach = typing ? 0.9 + tap : st > 0.5 ? 0.35 : 0;
+          const up = lift / 2.3;
+          const armDir = (side: number, swingSign: number) =>
+            new THREE.Vector3(side * (0.18 + up * 0.35), -1 + up * 2.0 + reach * 0.6, sw * swingSign * 0.6 + reach);
+          aim(r, s.root, "LeftArm", "LeftForeArm", armDir(1, 1));
+          aim(r, s.root, "RightArm", "RightForeArm", armDir(-1, -1));
+
+          let hx = Math.sin(time * 0.7 + k) * 0.05 + (typing ? 0.15 : 0), hy = Math.sin(time * 0.5 + k * 2) * 0.12;
+          if (live && (s.react.kind === "nod" || cheer)) hx += Math.sin(rt * 12) * 0.25;
+          if (live && s.react.kind === "shake") hy = Math.sin(rt * 14) * 0.45;
+          pose(r, "Head", hx, hy, 0);
+          pose(r, "Spine", typing ? 0.12 : 0, 0, 0);
+        }
       });
 
       // paper follows carrier's hand
@@ -414,11 +529,12 @@ export default function SimOffice({
       if (active) {
         plumbob.visible = true;
         const s = sims[active];
-        plumbob.position.set(s.root.position.x, s.hips.position.y + 1.32 + Math.sin(time * 2.5) * 0.05, s.root.position.z);
+        plumbob.position.set(s.root.position.x, (s.rig ? 1.95 - 0.36 * s.seated : s.hips.position.y + 1.32) + Math.sin(time * 2.5) * 0.05, s.root.position.z);
         plumbob.rotation.y += dt * 2;
       } else plumbob.visible = false;
 
       if (boardMode === "sweep") drawBoard("sweep", time * 6);
+      if (frame % 60 === 0) decor.tick();
 
       controls.update();
       renderer.render(scene, camera);

@@ -139,3 +139,7 @@ can export it from Notion as CSV (••• → Export). Some things you could s
 - **Model error / "not found"**: Google renames models over time. Open AI Studio, see
   which Flash models your key can use for free, and set `AGENT_MODEL` to one of them.
   The fallback list is at the top of `lib/engine.ts`.
+
+## Credits
+3D characters by Kenney and furniture by KayKit (Kay Lousberg), both CC0.
+See `public/models/CREDITS.md`.

@@ -312,6 +312,25 @@ export default function SimOffice({
         const bones: Record<string, THREE.Bone> = {}, rest: Record<string, THREE.Quaternion> = {};
         m.traverse((o: any) => { if (o.isBone) { bones[o.name] = o; rest[o.name] = o.quaternion.clone(); } });
         sims[id].rig = { bones, rest, holder };
+        // Hijab for Hajar and Siti, built in code and attached to the head bone
+        const HIJAB: Partial<Record<AgentId, number>> = { associate: 0x5fae8f, reviewer: 0xc98f8a };
+        const hc = HIJAB[id];
+        if (hc !== undefined && bones.Head && bones.Head_end) {
+          // work in the head bone's own space: Head_end sits at the top of the head
+          const topLocal = bones.Head_end.position.clone();
+          const L = topLocal.length(), R = L * 0.66;
+          const hm = new THREE.MeshStandardMaterial({ color: hc, roughness: 0.95, side: THREE.DoubleSide });
+          const hij = new THREE.Group();
+          hij.position.copy(topLocal).multiplyScalar(0.5);
+          hij.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), topLocal.clone().normalize());
+          const shell = new THREE.Mesh(new THREE.SphereGeometry(R, 32, 24, Math.PI / 2 + 0.55, Math.PI * 2 - 1.1, 0, Math.PI * 0.82), hm);
+          const top = new THREE.Mesh(new THREE.SphereGeometry(R * 1.01, 32, 12, 0, Math.PI * 2, 0, 0.98), hm);
+          const chin = new THREE.Mesh(new THREE.SphereGeometry(R, 32, 10, 0, Math.PI * 2, Math.PI * 0.72, Math.PI * 0.28), hm);
+          const drape = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.62, R * 0.95, R * 0.55, 32, 1, true), hm);
+          drape.position.y = -R * 0.95;
+          [shell, top, chin, drape].forEach((x) => { x.castShadow = true; hij.add(x); });
+          bones.Head.add(hij);
+        }
         sims[id].hips.visible = false; // hide the simple-shape stand-in
       });
     });

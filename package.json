@@ -1,0 +1,23 @@
+{
+  "name": "ai-research-company",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^4.0.121",
+    "@notionhq/client": "^5.31.1",
+    "ai": "^7.0.173",
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19.3.0",
+    "typescript": "^5"
+  }
+}

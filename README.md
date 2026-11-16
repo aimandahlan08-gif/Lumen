@@ -24,7 +24,16 @@ Notion *Opportunities* database.
 
 ---
 
-## How it works
+## Two labs, two tabs
+- **🎬 Claude lab (replay):** Claude writes whole cycles in chat. After each cycle it
+  appends the turns to `data/claude-lab.json` and pushes to GitHub, and the website
+  replays them with play, pause and speed controls. No API key is needed.
+- **🔴 Gemini lab (live):** the original live simulation on Gemini's free API tier.
+
+Both labs log to the same Notion databases. The **Model** column (Gemini or Claude)
+tells them apart.
+
+## How it works (Gemini lab)
 
 ```
 Dashboard (Vercel)  ──"Next turn"──▶  /api/tick  ──▶  Gemini (one agent, one step)

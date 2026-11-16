@@ -137,6 +137,7 @@ export async function logActivity(item: FeedItem & { full: string }) {
       Agent: { select: { name: item.agent } },
       Phase: { select: { name: item.phase } },
       Cycle: { number: item.cycle },
+      Model: { select: { name: "Gemini" } },
     },
     children: paragraphs(item.full),
   });
@@ -160,6 +161,7 @@ export async function saveOutput(o: {
       Type: { rich_text: toRichText(o.type) },
       Verdict: { select: { name: o.verdict } },
       Question: { rich_text: toRichText(o.question) },
+      Model: { select: { name: "Gemini" } },
     },
     children: [
       heading("Director's decision"),
@@ -190,6 +192,7 @@ export async function saveOpportunity(o: {
       Gap: { number: o.demand - o.supply },
       Chosen: { checkbox: o.chosen },
       Reason: { rich_text: toRichText(o.reason) },
+      Model: { select: { name: "Gemini" } },
     },
   });
 }

@@ -1,210 +1,35 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AGENTS, COMPANY, PHASES, PHASE_INFO, type AgentId, type Phase } from "@/lib/company";
+import { useEffect, useState } from "react";
+import { COMPANY } from "@/lib/company";
+import LiveLab from "@/components/LiveLab";
+import ClaudeLab from "@/components/ClaudeLab";
 
-type FeedItem = { t: string; agent: string; phase: string; cycle: number; text: string };
-type State = {
-  cycle: number;
-  phase: Phase;
-  outputType: string;
-  question: string;
-  draft: string;
-  review: string;
-  brief: string;
-  history: string;
-  feed: FeedItem[];
-  tickCount: number;
-  busy: boolean;
-  error?: string;
-};
+type Tab = "claude" | "live";
 
-const DOCS = ["question", "draft", "review", "brief", "history"] as const;
+export default function Home() {
+  const [tab, setTab] = useState<Tab>("claude");
 
-export default function Office() {
-  const [s, setS] = useState<State | null>(null);
-  const [key, setKey] = useState("");
-  const [working, setWorking] = useState(false);
-  const [auto, setAuto] = useState(false);
-  const [err, setErr] = useState("");
-  const [note, setNote] = useState("");
-  const [tickErr, setTickErr] = useState(""); // stays until you close it
-  const [doc, setDoc] = useState<(typeof DOCS)[number]>("question");
-  const autoRef = useRef(false);
-
+  // Remember the tab in the address (…/#live) so links open the right one
   useEffect(() => {
-    try { setKey(localStorage.getItem("adminKey") || ""); } catch {}
+    if (window.location.hash === "#live") setTab("live");
   }, []);
-
-  const load = useCallback(async () => {
-    try {
-      const r = await fetch("/api/state", { cache: "no-store" });
-      const j = await r.json();
-      if (j.error) setErr(j.error); else { setS(j); setErr(""); }
-    } catch (e: any) { setErr(e.message); }
-  }, []);
-
-  useEffect(() => {
-    load();
-    const id = setInterval(load, 5000);
-    return () => clearInterval(id);
-  }, [load]);
-
-  const tick = useCallback(async (): Promise<"ok" | "fail" | "stop"> => {
-    let outcome: "ok" | "fail" | "stop" = "ok";
-    setWorking(true);
-    try {
-      const r = await fetch("/api/tick", { method: "POST", headers: { "x-admin-key": key } });
-      const j = await r.json();
-      if (j.reason === "quota") { setNote(j.message); outcome = "stop"; }
-      else if (j.reason === "Wrong admin key") { setTickErr(j.reason); outcome = "stop"; }
-      else if (!j.ok && j.reason !== "busy") { setTickErr(j.reason); outcome = "fail"; }
-      else { setNote(""); setTickErr(""); }
-    } catch (e: any) { setTickErr(`Couldn't reach the server: ${e.message}`); outcome = "fail"; }
-    setWorking(false);
-    await load();
-    return outcome;
-  }, [key, load]);
-
-  // Auto-run: keep taking turns while this page is open
-  useEffect(() => {
-    autoRef.current = auto;
-    if (!auto) return;
-    let stop = false;
-    (async () => {
-      let failsInARow = 0;
-      while (!stop && autoRef.current) {
-        const r = await tick();
-        if (r === "stop") break;
-        failsInARow = r === "fail" ? failsInARow + 1 : 0;
-        if (failsInARow >= 3) break; // something is really wrong — stop and show the error
-        // gentle pace for free-tier limits; wait longer after a failure
-        await new Promise((res) => setTimeout(res, r === "fail" ? 45000 : 25000));
-      }
-      autoRef.current = false;
-      setAuto(false);
-    })();
-    return () => { stop = true; };
-  }, [auto, tick]);
-
-  const saveKey = (v: string) => {
-    setKey(v);
-    try { localStorage.setItem("adminKey", v); } catch {}
+  const choose = (t: Tab) => {
+    setTab(t);
+    try { window.history.replaceState(null, "", t === "live" ? "#live" : "#claude"); } catch {}
   };
-
-  const phase = s?.phase ?? "PLAN";
-  const activeAgent = PHASE_INFO[phase].agent;
-  const lastBy = (a: AgentId) => [...(s?.feed ?? [])].reverse().find((f) => f.agent === a);
-  const notionUrl = process.env.NEXT_PUBLIC_NOTION_URL || "https://www.notion.so/41adfe99f77e81388dd8e2c05d5266d6";
 
   return (
     <main className="wrap">
-      <div className="top">
-        <div>
-          <h1 className="title pixel">{COMPANY.name}</h1>
-          <div className="sub">
-            Cycle {s?.cycle ?? "–"} · {s?.tickCount ?? 0} turns · Output: {s?.outputType || COMPANY.startingOutputType}
-            {notionUrl && <> · <a href={notionUrl} target="_blank">Open Notion HQ</a></>}
-          </div>
-        </div>
-        <div className="controls">
-          <input className="key" type="password" placeholder="admin key" value={key} onChange={(e) => saveKey(e.target.value)} />
-          <button className="btn" disabled={working || !key} onClick={() => tick()}>
-            {working ? "Working…" : "▶ Next turn"}
-          </button>
-          <button className={`btn ghost ${auto ? "on" : ""}`} disabled={!key} onClick={() => setAuto(!auto)}>
-            {auto ? "■ Stop auto-run" : "⟳ Auto-run"}
-          </button>
-        </div>
+      <h1 className="title pixel">{COMPANY.name}</h1>
+      <div className="labtabs">
+        <button className={`labtab ${tab === "claude" ? "sel" : ""}`} onClick={() => choose("claude")}>
+          🎬 Claude lab <span>replay</span>
+        </button>
+        <button className={`labtab ${tab === "live" ? "sel" : ""}`} onClick={() => choose("live")}>
+          🔴 Gemini lab <span>live</span>
+        </button>
       </div>
-
-      {err && <div className="err">⚠ {err}</div>}
-      {tickErr && (
-        <div className="err">
-          ⚠ {tickErr}{" "}
-          <button className="tab" onClick={() => setTickErr("")}>✕ close</button>
-        </div>
-      )}
-      {note && <div className="note">{note}</div>}
-
-      <div className="phases">
-        {PHASES.map((p, i) => (
-          <div key={p} className={`chip ${p === phase ? "now" : i < PHASES.indexOf(phase) ? "done" : ""}`}>
-            {i + 1}. {PHASE_INFO[p].label}
-          </div>
-        ))}
-      </div>
-
-      <section className="office">
-        {(Object.keys(AGENTS) as AgentId[]).map((id) => {
-          const a = AGENTS[id];
-          const last = lastBy(id);
-          const isActive = id === activeAgent;
-          return (
-            <div key={id} className={`desk ${isActive ? "active" : ""}`}>
-              <div className="bubble">
-                {isActive && (working || s?.busy) ? (
-                  <span className="thinking">thinking…</span>
-                ) : isActive ? (
-                  <span><b>Up next:</b> {PHASE_INFO[phase].label}</span>
-                ) : last ? (
-                  last.text
-                ) : (
-                  <span className="empty">waiting…</span>
-                )}
-              </div>
-              <div className="avatar">{a.avatar}</div>
-              <div className="table" style={{ borderTop: `4px solid ${a.color}` }} />
-              <div className="nameplate">
-                <b className="pixel" style={{ color: a.color }}>{a.name}</b>
-                <span>{a.title}</span>
-              </div>
-            </div>
-          );
-        })}
-      </section>
-
-      <div className="grid">
-        <div className="panel">
-          <h3 className="pixel">Activity</h3>
-          {s?.feed?.length ? (
-            <ul className="feed">
-              {[...s.feed].reverse().map((f, i) => {
-                const a = AGENTS[f.agent as AgentId];
-                if (!a) {
-                  return (
-                    <li key={i} style={{ color: "#ff9aa9" }}>
-                      <div className="meta">{new Date(f.t).toLocaleTimeString()} · C{f.cycle} · {f.phase}</div>
-                      ⚠ System: {f.text}
-                    </li>
-                  );
-                }
-                return (
-                  <li key={i}>
-                    <div className="meta">
-                      {new Date(f.t).toLocaleTimeString()} · C{f.cycle} · {f.phase}
-                    </div>
-                    <span style={{ color: a?.color }}>{a?.avatar} {a?.name}:</span> {f.text}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="empty">Nothing yet. Enter your admin key and press “Next turn”.</p>
-          )}
-        </div>
-
-        <div className="panel">
-          <h3 className="pixel">Current work</h3>
-          <div className="tabs">
-            {DOCS.map((d) => (
-              <button key={d} className={`tab ${doc === d ? "sel" : ""}`} onClick={() => setDoc(d)}>
-                {d[0].toUpperCase() + d.slice(1)}
-              </button>
-            ))}
-          </div>
-          <div className="doc">{(s && s[doc]) || <span className="empty">Not written yet this cycle.</span>}</div>
-        </div>
-      </div>
+      {tab === "claude" ? <ClaudeLab /> : <LiveLab />}
     </main>
   );
 }

@@ -27,6 +27,7 @@ export default function Office() {
   const [auto, setAuto] = useState(false);
   const [err, setErr] = useState("");
   const [note, setNote] = useState("");
+  const [tickErr, setTickErr] = useState(""); // stays until you close it
   const [doc, setDoc] = useState<(typeof DOCS)[number]>("question");
   const autoRef = useRef(false);
 
@@ -54,9 +55,9 @@ export default function Office() {
       const r = await fetch("/api/tick", { method: "POST", headers: { "x-admin-key": key } });
       const j = await r.json();
       if (j.reason === "quota") { setNote(j.message); autoRef.current = false; setAuto(false); }
-      else if (!j.ok && j.reason !== "busy") { setErr(j.reason); autoRef.current = false; setAuto(false); }
-      else setNote("");
-    } catch (e: any) { setErr(e.message); }
+      else if (!j.ok && j.reason !== "busy") { setTickErr(j.reason); autoRef.current = false; setAuto(false); }
+      else { setNote(""); setTickErr(""); }
+    } catch (e: any) { setTickErr(`Couldn't reach the server: ${e.message}`); autoRef.current = false; setAuto(false); }
     setWorking(false);
     await load();
   }, [key, load]);
@@ -107,6 +108,12 @@ export default function Office() {
       </div>
 
       {err && <div className="err">⚠ {err}</div>}
+      {tickErr && (
+        <div className="err">
+          ⚠ {tickErr}{" "}
+          <button className="tab" onClick={() => setTickErr("")}>✕ close</button>
+        </div>
+      )}
       {note && <div className="note">{note}</div>}
 
       <div className="phases">
@@ -153,6 +160,14 @@ export default function Office() {
             <ul className="feed">
               {[...s.feed].reverse().map((f, i) => {
                 const a = AGENTS[f.agent as AgentId];
+                if (!a) {
+                  return (
+                    <li key={i} style={{ color: "#ff9aa9" }}>
+                      <div className="meta">{new Date(f.t).toLocaleTimeString()} · C{f.cycle} · {f.phase}</div>
+                      ⚠ System: {f.text}
+                    </li>
+                  );
+                }
                 return (
                   <li key={i}>
                     <div className="meta">

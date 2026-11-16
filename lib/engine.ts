@@ -33,22 +33,26 @@ function statusOf(err: any): number | undefined {
 
 async function ask(agent: AgentId, prompt: string, maxOutputTokens = 1800) {
   let lastErr: any;
+  let partial = "";
   const started = Date.now();
   for (const model of MODELS) {
     if (Date.now() - started > 150_000) break; // stay well inside Vercel's 5-minute limit
     try {
-      const { text } = await generateText({
+      const { text, finishReason } = await generateText({
         model: google(model),
         system: AGENTS[agent].system,
         prompt,
         // Gemini "thinks" before answering and that counts toward this limit,
-        // so give plenty of room or the visible answer comes back empty.
+        // so give plenty of room or the visible answer comes back cut off.
         maxOutputTokens: maxOutputTokens + 6000,
         maxRetries: 1,
         abortSignal: AbortSignal.timeout(75_000),
       });
-      if (text.trim()) return text.trim();
-      lastErr = new Error(`${model} returned an empty answer`);
+      const t = text.trim();
+      if (t && finishReason === "stop") return t;
+      // Cut off or blocked: remember the best partial answer and try the next model
+      if (t.length > partial.length) partial = t;
+      lastErr = new Error(`${model} stopped early (${finishReason})`);
     } catch (err: any) {
       lastErr = err;
       const code = statusOf(err);
@@ -60,6 +64,7 @@ async function ask(agent: AgentId, prompt: string, maxOutputTokens = 1800) {
       if (!tryNext) throw err;
     }
   }
+  if (partial.length > 200) return partial; // better a slightly cut answer than nothing
   if (statusOf(lastErr) === 429 || /quota|RESOURCE_EXHAUSTED/i.test(String(lastErr?.message))) {
     throw new QuotaError("Free daily limit reached for today's Gemini models. The lab rests until tomorrow 🌙");
   }
@@ -261,7 +266,15 @@ CHOICE: <the exact output type you pick for next cycle>`,
     });
     return { ok: true, phase, agent, message: summary, cycle: s.cycle };
   } catch (err: any) {
-    await saveState({ lockedUntil: null }).catch(() => {});
+    const reason = String(err?.message ?? err).slice(0, 280);
+    const errItem: FeedItem = {
+      t: new Date().toISOString(),
+      agent: "system",
+      phase: s.phase,
+      cycle: s.cycle,
+      text: err instanceof QuotaError ? err.message : `Turn failed: ${reason}`,
+    };
+    await saveState({ lockedUntil: null, feed: [...s.feed, errItem].slice(-20) }).catch(() => {});
     if (err instanceof QuotaError) return { ok: false, reason: "quota", message: err.message };
     return { ok: false, reason: err?.message ?? String(err) };
   }

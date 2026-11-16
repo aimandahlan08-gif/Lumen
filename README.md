@@ -7,9 +7,9 @@ so the whole setup costs **RM0**.
 
 | Agent | Role | Job |
 |---|---|---|
-| 🧭 Dr. Nadia | Research Director (PI) | Picks questions, makes decisions, runs the opportunity scan |
-| 🔬 Ravi | Research Associate | Drafts and revises the research |
-| 🧐 Prof. Mei | Reviewer / Methodologist | Critiques everything, approves or sends back |
+| 🧭 Aiman | Research Director (PI) | Picks questions, makes decisions, runs the opportunity scan |
+| 🔬 Hajar | Research Associate | Drafts and revises the research |
+| 🧐 Siti | Reviewer / Methodologist | Critiques everything, approves or sends back |
 
 **One cycle = 6 turns:**
 `PLAN → DRAFT → REVIEW → REVISE → DECIDE → SCAN`

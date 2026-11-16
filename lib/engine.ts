@@ -23,7 +23,7 @@ const MODELS = [
   "gemini-2.5-flash",
 ].filter((m, i, a): m is string => !!m && a.indexOf(m) === i);
 
-const LOCK_SECONDS = 150;
+const LOCK_SECONDS = 240;
 
 export class QuotaError extends Error {}
 
@@ -33,14 +33,19 @@ function statusOf(err: any): number | undefined {
 
 async function ask(agent: AgentId, prompt: string, maxOutputTokens = 1800) {
   let lastErr: any;
+  const started = Date.now();
   for (const model of MODELS) {
+    if (Date.now() - started > 150_000) break; // stay well inside Vercel's 5-minute limit
     try {
       const { text } = await generateText({
         model: google(model),
         system: AGENTS[agent].system,
         prompt,
-        maxOutputTokens,
+        // Gemini "thinks" before answering and that counts toward this limit,
+        // so give plenty of room or the visible answer comes back empty.
+        maxOutputTokens: maxOutputTokens + 6000,
         maxRetries: 1,
+        abortSignal: AbortSignal.timeout(75_000),
       });
       if (text.trim()) return text.trim();
       lastErr = new Error(`${model} returned an empty answer`);
@@ -48,14 +53,17 @@ async function ask(agent: AgentId, prompt: string, maxOutputTokens = 1800) {
       lastErr = err;
       const code = statusOf(err);
       const msg = String(err?.message ?? "");
-      const tryNext = code === 429 || code === 404 || code === 403 || /quota|RESOURCE_EXHAUSTED|not found/i.test(msg);
+      const tryNext =
+        code === 429 || code === 404 || code === 403 || code === 400 || code === 503 ||
+        /quota|RESOURCE_EXHAUSTED|not found|timeout|aborted|overloaded|UNAVAILABLE/i.test(msg) ||
+        err?.name === "TimeoutError" || err?.name === "AbortError";
       if (!tryNext) throw err;
     }
   }
   if (statusOf(lastErr) === 429 || /quota|RESOURCE_EXHAUSTED/i.test(String(lastErr?.message))) {
     throw new QuotaError("Free daily limit reached for today's Gemini models. The lab rests until tomorrow 🌙");
   }
-  throw lastErr;
+  throw new Error(`Gemini didn't answer: ${String(lastErr?.message ?? lastErr).slice(0, 300)}`);
 }
 
 function grab(raw: string, label: string): string {

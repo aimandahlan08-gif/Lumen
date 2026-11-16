@@ -74,7 +74,7 @@ The database IDs are already filled in `.env.example`.
 2. Before you click Deploy, open **Environment Variables** and add every line from
    `.env.example`:
    - `GOOGLE_GENERATIVE_AI_API_KEY`: from step 1
-   - `AGENT_MODEL`: `gemini-3.5-flash-lite` (the code also tries a few other free
+   - `AGENT_MODEL`: `gemini-flash-latest` (the code also tries a few other free
      Flash models automatically if this one runs out of quota)
    - `NOTION_TOKEN`: from step 2
    - The 4 `NOTION_..._ID` values: copy them from `.env.example`

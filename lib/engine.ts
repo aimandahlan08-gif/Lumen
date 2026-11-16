@@ -16,6 +16,7 @@ import {
 // (or isn't available on your key), the next one is tried automatically.
 const MODELS = [
   process.env.AGENT_MODEL,
+  "gemini-flash-latest",
   "gemini-3.5-flash-lite",
   "gemini-3.5-flash",
   "gemini-2.5-flash-lite",

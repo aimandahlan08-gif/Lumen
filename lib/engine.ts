@@ -21,8 +21,7 @@ const MODELS = [
   "gemini-flash-lite-latest",
   "gemini-flash-latest",
   "gemini-3.5-flash",
-  "gemini-2.5-flash-lite",
-  "gemini-2.5-flash",
+  "gemini-3.8-flash",
 ].filter((m, i, a): m is string => !!m && a.indexOf(m) === i);
 
 const LOCK_SECONDS = 240;

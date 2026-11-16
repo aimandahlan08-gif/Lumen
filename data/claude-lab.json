@@ -1,7 +1,7 @@
 {
   "company": "Lumen Research Lab",
   "model": "Claude",
-  "updated": "2026-11-16T15:49:31.000Z",
+  "updated": "2026-11-16T16:13:53.000Z",
   "cycles": [
     {
       "cycle": 1,
@@ -95,6 +95,99 @@
           "feasibility": 3
         }
       }
+    },
+    {
+      "cycle": 2,
+      "date": "2026-11-16T16:13:53.000Z",
+      "outputType": "Validated bilingual chatbot stimulus set (formal, casual and code-switched scripts)",
+      "question": "Can we build an open, reusable set of chatbot scripts in three matched styles (formal English, casual English, Malay–English code-switching) that differ only in language style?",
+      "title": "LUMEN-Talk v1.0: A Matched Formal, Casual and Code-Switched Chatbot Script Set (Malay–English)",
+      "verdict": "REVISE",
+      "decision": "ACCEPT",
+      "summary": "A free set of matched chatbot scripts that differ only in language style, ready for experiments like Episode 1. It comes with a style codebook and a three-part check (naturalness, formality, warmth) that has to be run before anyone calls it validated.",
+      "nextOutputType": "Coding manual for self-disclosure depth in Malay–English chat text",
+      "scores": {
+        "draft": {
+          "rigor": 2,
+          "novelty": 4,
+          "ethics": 3,
+          "feasibility": 4
+        },
+        "final": {
+          "rigor": 4,
+          "novelty": 4,
+          "ethics": 4,
+          "feasibility": 4
+        }
+      },
+      "turns": [
+        {
+          "phase": "PLAN",
+          "agent": "director",
+          "summary": "Episode 2: let's build a free script set (formal, casual, code-switched) so nobody has to rebuild chatbot materials again.",
+          "text": "QUESTION: Can we build an open, reusable set of chatbot scripts in three matched styles (formal English, casual English and Malay–English code-switching) that differ only in language style, so studies like Episode 1 don't have to rebuild their materials from scratch?\n\nWHY: Our opportunity scan found high demand and almost no supply. Every language-style study builds its own scripts, so results are hard to compare and the scripts are rarely checked for naturalness. A shared set fixes both problems.\n\nINSTRUCTIONS:\n- Use one short check-in conversation with 6 chatbot turns: greet, invite sharing, reflect, validate, follow-up question, close with support options.\n- Keep the topic low-risk (everyday study or work stress), not crisis content.\n- Match the three versions on meaning, empathy content, number of questions and approximate length. Only the style should change.\n- Write down exactly which style markers each version uses, so other researchers know what they are manipulating.\n- Include a plan for testing the scripts with native speakers before anyone calls them \"validated\"."
+        },
+        {
+          "phase": "DRAFT",
+          "agent": "associate",
+          "summary": "Drafted LUMEN-Talk v0.1: three 6-turn check-in scripts, matched on meaning and word count, rated by 10 postgrads.",
+          "text": "# LUMEN-Talk v0.1: Matched chatbot scripts (draft)\n\n## Conversation flow (6 bot turns)\nGreet → invite sharing → reflect → validate → follow-up question → close with support options.\n\n## Version A: Formal English\n1. Hello, thank you for joining. I am here to talk about how your week has been.\n2. Could you tell me about something that has been stressful for you recently?\n3. Thank you for sharing that. It sounds like this has been weighing on you.\n4. It is understandable to feel this way when there is so much going on.\n5. What has been the most difficult part of it for you?\n6. Thank you for talking with me today. If things feel heavy, please consider reaching out to someone you trust or a support service.\n\n## Version B: Casual English\n1. Hey dude, thanks for coming! I'm here to chat about how your week's been.\n2. So what's been stressing you out lately?\n3. Thanks for telling me. Sounds like it's really been on your mind.\n4. Totally makes sense to feel like that with so much going on.\n5. What's been the hardest bit for you?\n6. Thanks for chatting today. If things get heavy, maybe reach out to someone you trust or a support line, okay?\n\n## Version C: Malay–English code-switching\n1. Hi lah, thanks sebab join tau! I'm here nak borak-borak pasal minggu you, best ke tak lah?\n2. So apa yang buat you stress gila lately, cerita lah sikit?\n3. Thanks sebab share tau. Sounds macam benda ni memang berat lah untuk you kan.\n4. Memang make sense lah rasa macam tu, banyak sangat benda jadi kan.\n5. Part mana yang paling susah lah untuk you?\n6. Okay thanks borak dengan I hari ni! Kalau rasa berat, cuba reach out to someone you trust atau support line ok?\n\n## Matching rules\n- Same meaning in each turn across versions.\n- Word counts within about 10% of each other.\n\n## Validation plan\nTen postgraduate students at one university rate each version for naturalness (1–5). Versions averaging 4 or above are accepted.\n\n## Release\nShare the scripts as a PDF on request."
+        },
+        {
+          "phase": "REVIEW",
+          "agent": "reviewer",
+          "summary": "REVISE. Too many “lah”s reads like a caricature, “dude” isn't Malaysian, and casual vs code-switched must match on formality and warmth, not just word count.",
+          "text": "VERDICT: REVISE\n\nSCORES (draft, 1–5): Rigor 2 · Novelty 4 · Ethics 3 · Feasibility 4\n\nSTRENGTHS:\n- Fills a real gap. Matched scripts that share one conversation flow are exactly what language-style studies need.\n- The 6-turn flow is short, low-risk and easy to reuse.\n- The formal and casual English versions are already close to usable.\n\nPROBLEMS:\n1. Version C overuses particles. It has \"lah\" in almost every line, plus \"tau\", \"kan\" and \"gila\". Real code-switching is lighter than this. Overdone particles read as a caricature and could feel mocking, which is exactly the risk Episode 1 warned about.\n2. Version B uses \"dude\", which is American slang that Malaysian young adults rarely use with strangers. That adds a cultural cue we didn't intend.\n3. Matching only on word count misses the point. Episode 1's key comparison is casual English vs code-switching, so those two must be equally informal and equally warm. Nothing checks that.\n4. Version C is also warmer and more enthusiastic (exclamation marks, \"best ke tak\"). That changes emotional tone, not just language.\n5. The rater pool is too narrow. Ten postgraduates at one university don't cover the language backgrounds of Malaysian young adults.\n6. There is no codebook of style markers, version number or licence, and \"PDF on request\" is not open. Other researchers can't reuse or cite it properly.\n7. The closing turn mentions a \"support service\" without saying which one. Any real study must name a verified local resource.\n\nREQUIRED FIXES:\n1. Rewrite Version C with light, natural mixing: Malay as the base with English content words, and at most one or two particles per conversation.\n2. Remove \"dude\" and keep casual English neutral.\n3. Match tone: same punctuation style and no extra exclamation marks or enthusiasm in any one version.\n4. Validate on three things, not one: naturalness, formality (B and C must be equal) and warmth/empathy (all three must be equal).\n5. Use about 30 raters across different home-language backgrounds and set clear pass thresholds.\n6. Release openly: a CSV/JSON file, a style-marker codebook and version notes under an open licence (for example, CC BY 4.0).\n7. Leave a clearly marked slot for a verified local support contact in turn 6."
+        },
+        {
+          "phase": "REVISE",
+          "agent": "associate",
+          "summary": "v1.0: natural light mixing, tone-matched versions, a style codebook, a 3-part check with 30 diverse raters, and an open CC BY release.",
+          "text": "CHANGES:\n- Rewrote Version C with light, natural mixing (one particle in the whole script) and removed \"dude\" from Version B.\n- Matched punctuation and tone across all three versions.\n- Expanded validation to three checks with about 30 diverse raters and pass thresholds.\n- Added a style-marker codebook, versioning, an open licence and a support-contact slot.\n\n# LUMEN-Talk v1.0: Matched formal, casual and code-switched chatbot scripts (Malay–English)\n\n## Purpose\nA free, reusable set of chatbot scripts for experiments on language style. The three versions share the same meaning, empathy content and structure. Only the language style changes.\n\n## Version A: Formal English\n1. Hello, thank you for joining. I am here to talk about how your week has been.\n2. Could you tell me about something that has been stressful for you recently?\n3. Thank you for sharing that. It sounds like this has been weighing on you.\n4. It is understandable to feel this way when there is so much going on.\n5. What has been the most difficult part of it for you?\n6. Thank you for talking with me today. If things feel heavy, you can reach out to someone you trust or [VERIFIED LOCAL SUPPORT CONTACT].\n\n## Version B: Casual English\n1. Hi, thanks for joining. I'm here to chat about how your week's been.\n2. So what's been stressing you out lately?\n3. Thanks for sharing. Sounds like it's really been on your mind.\n4. It makes sense to feel that way with so much going on.\n5. What's been the hardest part for you?\n6. Thanks for chatting today. If things feel heavy, you can reach out to someone you trust or [VERIFIED LOCAL SUPPORT CONTACT].\n\n## Version C: Malay–English code-switching\n1. Hi, thanks sebab join. I'm here nak borak pasal minggu you macam mana.\n2. So, apa yang buat you stress lately?\n3. Thanks sebab share. Sounds macam benda ni memang berat untuk you.\n4. Memang make sense rasa macam tu, banyak benda jadi serentak.\n5. Part mana yang paling susah untuk you?\n6. Thanks borak dengan I hari ni. Kalau rasa berat, you boleh reach out to someone you trust atau [VERIFIED LOCAL SUPPORT CONTACT].\n\n## Style-marker codebook\n- **Formal (A):** full forms (\"I am\", \"it is\"), polite modals (\"could you\"), no contractions or slang.\n- **Casual (B):** contractions, everyday phrasing (\"so what's…\", \"hardest part\"), no slang or dialect.\n- **Code-switched (C):** intra-sentence Malay–English mixing; English content words (\"stress\", \"share\", \"make sense\") inside Malay structure; informal pronouns \"I/you\". Particles are kept to a minimum on purpose.\n- **Held constant:** meaning per turn, number of questions (2), empathy moves (reflect and validate), punctuation (no exclamation marks), and length within about 15%.\n\n## Validation protocol (before calling it \"validated\")\nAbout 30 Malaysian raters aged 18–30, recruited across home-language groups (Malay, Chinese, Tamil and other home languages) and from more than one institution. Each rater sees all three versions in random order and rates each on a 1–5 scale for:\n1. **Naturalness** (\"Sounds like how a real person would type\"). Pass: mean ≥ 4.0 for every version.\n2. **Formality.** Pass: A clearly more formal than B and C, and B and C not meaningfully different (equivalence test).\n3. **Warmth and empathy.** Pass: no meaningful difference across all three versions (equivalence test).\nAny line flagged as awkward or mocking by 3 or more raters is rewritten and re-rated.\n\n## Release package\nCSV and JSON files of all scripts, the codebook, rating data, and version notes (v1.0), shared on an open repository under CC BY 4.0, with a suggested citation.\n\n## Limitations\nIt covers one low-risk conversation and one language pair, and it was written for young adults. Other topics, age groups and language pairs (for example, Mandarin–English) need their own versions."
+        },
+        {
+          "phase": "DECIDE",
+          "agent": "director",
+          "summary": "ACCEPT: LUMEN-Talk v1.0. Lesson: match materials on what people perceive (formality, warmth), not just what we can count.",
+          "text": "DECISION: ACCEPT\nTITLE: LUMEN-Talk v1.0: A Matched Formal, Casual and Code-Switched Chatbot Script Set (Malay–English)\nSUMMARY: A free set of matched chatbot scripts that differ only in language style, ready for experiments like Episode 1. It comes with a style codebook and a three-part check (naturalness, formality, warmth) that has to be run before anyone calls it validated.\nLESSON: Match materials on what people perceive (formality, warmth), not just on what we can count (word length).\nSCORES (final, 1–5): Rigor 4 · Novelty 4 · Ethics 4 · Feasibility 4"
+        },
+        {
+          "phase": "SCAN",
+          "agent": "director",
+          "summary": "Radar locks on: a coding manual for self-disclosure depth in Malay–English chat text (demand 4, supply 1).",
+          "text": "OPTION: Coding manual for self-disclosure depth in Malay–English chat text | 4 | 1 | Our studies code disclosure from real messages, but existing coding schemes are English-only and don't handle mixed-language text.\nOPTION: Practitioner design guide for culturally adapted well-being chatbots in Malaysia | 4 | 2 | Still in demand; local guidance remains scarce.\nOPTION: Pre-registration template for chatbot language-style experiments | 3 | 2 | Useful for rigor, but general pre-registration templates already exist.\nOPTION: Policy brief on AI companions and youth well-being in Malaysia | 4 | 2 | Policy interest is rising, but it would be stronger once we have more of our own materials.\nCHOICE: Coding manual for self-disclosure depth in Malay–English chat text\n\nNote: these demand and supply scores are my own estimates from general knowledge, not market data."
+        }
+      ],
+      "opportunities": [
+        {
+          "name": "Coding manual for self-disclosure depth in Malay–English chat text",
+          "demand": 4,
+          "supply": 1,
+          "reason": "Our studies code disclosure from real messages, but existing coding schemes are English-only and don't handle mixed-language text.",
+          "chosen": true
+        },
+        {
+          "name": "Practitioner design guide for culturally adapted well-being chatbots in Malaysia",
+          "demand": 4,
+          "supply": 2,
+          "reason": "Still in demand; local guidance remains scarce.",
+          "chosen": false
+        },
+        {
+          "name": "Pre-registration template for chatbot language-style experiments",
+          "demand": 3,
+          "supply": 2,
+          "reason": "Useful for rigor, but general pre-registration templates already exist.",
+          "chosen": false
+        },
+        {
+          "name": "Policy brief on AI companions and youth well-being in Malaysia",
+          "demand": 4,
+          "supply": 2,
+          "reason": "Policy interest is rising, but it would be stronger once we have more of our own materials.",
+          "chosen": false
+        }
+      ]
     }
   ]
 }

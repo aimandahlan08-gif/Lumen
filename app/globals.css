@@ -172,3 +172,19 @@ a { color: var(--accent); }
   .labtabs { flex-wrap: nowrap; }
   .controls .btn { padding: 8px 11px; }
 }
+
+/* ── 3D Sims-style office ── */
+.sim-wrap { position: relative; border: 3px solid var(--line); background: #1a1c38; overflow: hidden; }
+.sim-canvas canvas { display: block; width: 100% !important; height: auto !important; }
+.sim-tag { position: absolute; transform: translate(-50%, 0); pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.sim-tag span { font-size: 10px; background: rgba(20,21,43,.8); color: #fff; padding: 1px 6px; border-left: 3px solid; white-space: nowrap; }
+.sim-think {
+  position: absolute; transform: translate(14px, -120%); pointer-events: none;
+  background: #fff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; box-shadow: 0 2px 0 rgba(0,0,0,.25); animation: pop .4s ease-out, floaty 2s ease-in-out infinite;
+}
+.sim-think::after { content: ""; position: absolute; bottom: -6px; left: 2px; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+@keyframes floaty { 50% { transform: translate(14px, -128%); } }
+.sim-cam { position: absolute; left: 6px; bottom: 5px; font-size: 10px; background: rgba(0,0,0,.45); color: #fff; border: 1px solid rgba(255,255,255,.3); padding: 3px 7px; cursor: pointer; }
+.sim-cam.on { background: #1fa67a; }
+.sim-wrap .po-lock { top: auto; bottom: 30px; }

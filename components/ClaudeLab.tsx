@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AGENTS, COMPANY, PHASE_INFO, type AgentId, type Phase } from "@/lib/company";
 import { PhaseBar } from "./Office";
-import { PixelOffice, CHOREO_MS } from "./PixelOffice";
+import SimOffice, { CHOREO_MS } from "./SimOffice";
 import { ACHIEVEMENTS, STAT_KEYS, XP_PER_LEVEL, unlockIndex, xpFor, type ReplayTurn, type Scores } from "@/lib/game";
 import lab from "@/data/claude-lab.json";
 
@@ -131,7 +131,7 @@ export default function ClaudeLab() {
           : <>{DATA.cycles.length} cycles · {turns.length} turns · written by Claude. Press ▶ Play.</>}
       </div>
 
-      <PixelOffice
+      <SimOffice
         turn={cur ? { key: idx, phase: cur.phase, agent: cur.agent, verdict: cur.verdict, decision: cur.decision, scanPick: cycle?.nextOutputType } : null}
         trophies={trophies}
         cycleNo={cur?.cycle ?? 0}

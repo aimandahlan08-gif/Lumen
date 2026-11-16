@@ -1,6 +1,86 @@
 {
   "company": "Lumen Research Lab",
   "model": "Claude",
-  "updated": "2026-11-16T15:45:00.000Z",
-  "cycles": []
+  "updated": "2026-11-16T15:49:31.000Z",
+  "cycles": [
+    {
+      "cycle": 1,
+      "date": "2026-11-16T15:49:31.000Z",
+      "outputType": "Research proposal → peer review → revised research brief",
+      "question": "Does a chatbot that code-switches between Malay and English increase perceived warmth, trust and self-disclosure depth among Malaysian young adults, compared with a standard-English chatbot?",
+      "title": "Speaking Our Language: Malay–English Code-Switching as a Social Cue in Chatbot Self-Disclosure",
+      "verdict": "REVISE",
+      "decision": "ACCEPT",
+      "summary": "This study tests whether a chatbot that mixes Malay and English like Malaysian young adults do makes people feel closer to it and open up more. A casual-English control condition makes sure any effect comes from the language mixing itself, not just from sounding informal.",
+      "nextOutputType": "Validated bilingual chatbot stimulus set (formal, casual and code-switched scripts)",
+      "turns": [
+        {
+          "phase": "PLAN",
+          "agent": "director",
+          "summary": "New question: does a chatbot that mixes Malay and English (like we actually text) make young Malaysians trust it more and open up more?",
+          "text": "QUESTION: Does a chatbot that code-switches between Malay and English, the way many Malaysian young adults actually text, increase perceived warmth, trust and depth of self-disclosure compared with a chatbot that uses standard English only?\n\nWHY: Most human-AI disclosure research uses English-only agents and Western samples. In multilingual societies, language choice signals who is \"one of us\", so code-switching may be a powerful and under-studied social cue. That has direct design implications for local well-being apps.\n\nINSTRUCTIONS:\n- Frame code-switching as a social-identity and anthropomorphic cue, grounded in communication accommodation and in-group signalling ideas (describe prior work generally, no invented citations).\n- Use a controlled experiment where the chatbot's content is identical across conditions and only the language style changes.\n- Measure perceived warmth, competence, trust, and self-disclosure depth. Code disclosure from what people actually write, not just self-report.\n- Check that the code-switched messages sound natural to native speakers before running the study.\n- Flag risks: stereotyping, or the bot coming across as fake or mocking."
+        },
+        {
+          "phase": "DRAFT",
+          "agent": "associate",
+          "summary": "Drafted a 2-condition experiment: standard-English bot vs Malay–English code-switching bot, N=200, disclosure coded from real messages.",
+          "text": "# Speaking Our Language: Code-Switching Chatbots and Self-Disclosure Among Malaysian Young Adults\n\n## Background\nPeople tend to open up more to partners who seem warm and similar to them. Prior work on human-AI interaction suggests that human-like cues in chatbots (names, empathy statements, casual tone) can raise perceived warmth and willingness to disclose. Almost all of this work uses English-only agents. In Malaysia, many young adults mix Malay and English in everyday messaging. Language mixing can signal shared identity and closeness, so a chatbot that code-switches might be read as an in-group member. This has not been tested.\n\n## Research question and hypotheses\n**RQ:** Does a Malay–English code-switching chatbot increase perceived warmth, trust and self-disclosure depth compared with a standard-English chatbot?\n- **H1:** Participants rate the code-switching chatbot as warmer and more trustworthy.\n- **H2:** Participants disclose more deeply to the code-switching chatbot.\n\n## Method\n**Design:** Online between-subjects experiment with two conditions: (A) standard English and (B) Malay–English code-switching. The chatbot follows the same scripted flow in both conditions. It asks about a recent stressful experience, reflects back, and asks follow-up questions.\n\n**Participants:** 200 Malaysian adults aged 18–25 who report using both Malay and English, recruited through university mailing lists and social media.\n\n**Procedure:** Participants chat with the bot for about 10 minutes, then complete questionnaires.\n\n**Measures:**\n- Perceived warmth and competence (adapted short rating items)\n- Trust in the chatbot (adapted trust items)\n- Self-disclosure depth: two coders rate each participant's messages for depth (from surface facts to personal feelings)\n- Word count as a simple disclosure-quantity measure\n\n**Analysis:** Independent-samples t-tests (or ANCOVA controlling for age and gender) comparing conditions on each outcome.\n\n## Expected contribution\nThe first experimental test of code-switching as a social cue in chatbot conversations. It also gives practical guidance for designers of Malaysian mental-health and well-being chatbots.\n\n## Limitations\n- Scripted responses cannot adapt to what participants say, which lowers realism.\n- Self-selected online sample.\n- One 10-minute session cannot show longer-term effects."
+        },
+        {
+          "phase": "REVIEW",
+          "agent": "reviewer",
+          "summary": "REVISE. Big confound: code-switching is also more casual. Add a casual-English condition, measure people's own language habits, and add safeguards.",
+          "text": "VERDICT: REVISE\n\nSTRENGTHS:\n- A genuinely new question. Language style as a social cue in multilingual settings is almost untouched in human-AI disclosure research.\n- Holding script content constant across conditions is the right move.\n- Coding disclosure from participants' actual messages is stronger than relying on self-report alone.\n\nPROBLEMS:\n1. Main confound: code-switched Malay–English is also more casual than standard English. If condition B wins, we cannot tell whether code-switching or informality caused it. A casual-English condition is needed.\n2. Who code-switches differs. Malaysia is linguistically diverse, and Malay–English mixing is not equally natural for every young adult (it depends on home language, ethnicity and region). The participants' own code-switching habits and language dominance are not measured, so the cue may feel \"in-group\" to some and odd to others.\n3. Authenticity risk. Badly written code-switching can feel fake, try-hard or even mocking. The draft drops the naturalness check that the instructions asked for.\n4. Mechanism missing. The theory says code-switching works through perceived similarity or in-group belonging, but nothing measures that, so we cannot test why it works.\n5. Ethics. Asking about a recent stressful experience can surface distress. There is no screening, stop option, local support information or debrief.\n6. Sample size is not justified. There is no power analysis, and adding a third condition changes the required N.\n7. Coding is under-specified: no coding scheme, no inter-rater reliability target.\n\nREQUIRED FIXES:\n1. Add a casual-English condition (three conditions: formal English, casual English, Malay–English code-switching).\n2. Measure each participant's code-switching frequency, language dominance and home language; test them as moderators.\n3. Pilot the scripts with native-speaker ratings of naturalness and only use scripts that pass a set threshold.\n4. Add perceived similarity / in-group belonging as a mediator.\n5. Add safeguarding: exclude people in current crisis, allow stopping at any time, show local support contacts, debrief.\n6. Run an a priori power analysis for three groups.\n7. Define the disclosure-depth coding levels and require acceptable inter-rater reliability (for example, kappa ≥ .70)."
+        },
+        {
+          "phase": "REVISE",
+          "agent": "associate",
+          "summary": "Revised: 3 conditions (formal, casual, code-switched), N≈250 from a power analysis, naturalness pilot, in-group similarity as the mechanism.",
+          "text": "CHANGES:\n- Added a casual-English condition to separate code-switching from informality (now 3 conditions).\n- Added participant language background as a moderator and perceived in-group similarity as a mediator.\n- Added a native-speaker naturalness pilot, a power analysis, a defined coding scheme and a safeguarding protocol.\n\n# Speaking Our Language: Malay–English Code-Switching as a Social Cue in Chatbot Self-Disclosure (Revised Brief)\n\n## Question\nDoes a chatbot that code-switches between Malay and English increase perceived warmth, trust and self-disclosure depth among Malaysian young adults, beyond the effect of simply sounding casual?\n\n## Hypotheses\n- **H1:** Warmth and trust will be highest for code-switching, then casual English, then formal English.\n- **H2:** Disclosure depth will be higher for code-switching than casual English. This is the key test that separates code-switching from informality.\n- **H3:** The effect of code-switching is mediated by perceived in-group similarity.\n- **H4:** The effect is stronger for participants who code-switch often in daily life.\n\n## Method\n**Design:** Online between-subjects experiment with three conditions: formal English, casual English, and Malay–English code-switching. All three use the same scripted conversation flow. Only the language style changes.\n\n**Script pilot:** 20 native Malay–English bilinguals rate each script for naturalness and appropriateness. A script is used only if it reaches a preset mean rating (for example, ≥ 4 on a 5-point scale). Any line rated as awkward or mocking is rewritten.\n\n**Participants:** About 250 Malaysian adults aged 18–25. A power analysis for a three-group comparison with a small-to-medium effect (f = 0.20, α = .05, power = .80) gives roughly 250. Recruitment is stratified so that participants' home language groups are represented.\n\n**Measures:**\n- Perceived warmth, competence and trust (short adapted rating scales)\n- Perceived in-group similarity (\"This chatbot talks like people I know\")\n- Self-disclosure depth, coded into three levels (facts, thoughts and opinions, feelings and vulnerabilities) by two blind coders, with kappa ≥ .70 required\n- Participant's own code-switching frequency, language dominance and home language\n\n**Analysis:** One-way ANCOVA across the three conditions with planned contrasts (code-switching vs casual English for H2). A mediation model for H3 and moderated regression for H4.\n\n**Safeguarding:** Exclude people who report being in current crisis. Participants can stop at any time. Malaysian support contacts are shown before and after the chat. Full debrief about the language manipulation.\n\n## Contribution\nSeparates a cultural-linguistic cue from general informality, and tests why it works (in-group similarity) and for whom (frequent code-switchers). It gives evidence-based guidance on whether local well-being chatbots should \"speak like us\".\n\n## Limitations\nScripted responses limit realism. The results apply to Malay–English mixing among young adults and may not transfer to other language pairs. It is a single-session study."
+        },
+        {
+          "phase": "DECIDE",
+          "agent": "director",
+          "summary": "ACCEPT: “Speaking Our Language”. Lesson: when a cue comes bundled with another (here, informality), separate them from the start.",
+          "text": "DECISION: ACCEPT\nTITLE: Speaking Our Language: Malay–English Code-Switching as a Social Cue in Chatbot Self-Disclosure\nSUMMARY: This study tests whether a chatbot that mixes Malay and English like Malaysian young adults do makes people feel closer to it and open up more. A casual-English control condition makes sure any effect comes from the language mixing itself, not just from sounding informal.\nLESSON: When a cue comes bundled with other features (here, code-switching with informality), design a control that separates them from the start."
+        },
+        {
+          "phase": "SCAN",
+          "agent": "director",
+          "summary": "Opportunity scan → next: a validated bilingual chatbot script set (demand 4, supply 1). Almost nobody shares these.",
+          "text": "OPTION: Validated bilingual chatbot stimulus set (formal, casual and code-switched scripts) | 4 | 1 | Researchers in Southeast Asia need ready-made, naturalness-rated chatbot scripts; almost none are publicly available, and every study rebuilds them.\nOPTION: Practitioner design guide for culturally adapted well-being chatbots in Malaysia | 4 | 2 | App teams want concrete language and tone guidance, but most existing guides are Western and English-only.\nOPTION: Policy brief on AI companions and youth well-being in Malaysia | 4 | 2 | Policy interest is rising, but local evidence summaries are scarce.\nOPTION: Narrative review of anthropomorphic cues in chatbots | 3 | 4 | Useful, but several reviews of anthropomorphism already exist.\nCHOICE: Validated bilingual chatbot stimulus set (formal, casual and code-switched scripts)\n\nNote: these demand and supply scores are my own estimates from general knowledge, not market data."
+        }
+      ],
+      "opportunities": [
+        {
+          "name": "Validated bilingual chatbot stimulus set (formal, casual and code-switched scripts)",
+          "demand": 4,
+          "supply": 1,
+          "reason": "Researchers in Southeast Asia need ready-made, naturalness-rated chatbot scripts; almost none are publicly available.",
+          "chosen": true
+        },
+        {
+          "name": "Practitioner design guide for culturally adapted well-being chatbots in Malaysia",
+          "demand": 4,
+          "supply": 2,
+          "reason": "App teams want concrete language and tone guidance; most guides are Western and English-only.",
+          "chosen": false
+        },
+        {
+          "name": "Policy brief on AI companions and youth well-being in Malaysia",
+          "demand": 4,
+          "supply": 2,
+          "reason": "Policy interest is rising but local evidence summaries are scarce.",
+          "chosen": false
+        },
+        {
+          "name": "Narrative review of anthropomorphic cues in chatbots",
+          "demand": 3,
+          "supply": 4,
+          "reason": "Useful, but several reviews of anthropomorphism already exist.",
+          "chosen": false
+        }
+      ]
+    }
+  ]
 }
